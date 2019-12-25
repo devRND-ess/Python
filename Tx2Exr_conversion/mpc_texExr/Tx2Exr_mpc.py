@@ -1,20 +1,86 @@
-import sys
+import sys, math
 import os
 import subprocess
 from PyQt4 import QtGui, QtCore, uic
 from PyQt4.QtGui import QApplication, QDialog, QListWidgetItem, QListWidget, QIcon
 
+#---------------------------------------------------------------------------------------------------
+COMPLETED_STYLE = """
+QProgressBar{
+    border: 2px solid grey;
+    border-radius: 5px;
+    text-align: center
+}
+
+QProgressBar::chunk {
+    background-color: red;
+    width: 10px;
+    margin: 1px;
+}
+"""
+
+class localConversionThread(QtCore.QThread):
+    valueChanged = QtCore.pyqtSignal([int])
+    taskCompleteSignal = QtCore.pyqtSignal([int])
+    taskFinishedSingnal = QtCore.pyqtSignal([int])
+
+    def __init__(self, taskList):
+        super(localConversionThread, self).__init__()
+        self.taskToRunOnLocal = taskList
+        self.progressComplete = 0
+        self.taskComplete = False
+        self.success = 0
+        self.scroll = 0
+        self.convert = 1
+
+    def run(self):
+        for index ,tasks in enumerate(self.taskToRunOnLocal, start=0):
+            print("converting : image"+str(self.taskToRunOnLocal.index(tasks)))
+            #----Run Command-------
+            subprocess.call(tasks)
+            self.success = 1
+            self.taskCompleteSignal.emit(self.success)
+            self.scroll = index
+            self.progressComplete += 100.0/len(self.taskToRunOnLocal)
+            if self.taskToRunOnLocal.index(tasks)==(len(self.taskToRunOnLocal)-1):
+                self.progressComplete += 100.0-self.progressComplete
+            self.valueChanged.emit(self.progressComplete)
+
+            #print("Successfully converted")
+            print("-----------------------------------------------------------------")
+        self.taskToRunOnLocal = []
+        self.taskComplete = True
+        self.taskFinishedSingnal.emit(self.taskComplete)
+
+        print("Task Finished")
+
+        # pixmap = QtGui.QPixmap(60, 60)
+        # pixmap.fill()
+        # painter = QtGui.QPainter(pixmap)
+        # painter.setBrush(QtCore.Qt.red)
+        # painter.drawRect(5, 10, 50, 30)
+
 class MyWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MyWindow, self).__init__()
-        uic.loadUi('AddFiles.ui', self)
+        uic.loadUi('txUtility.ui', self)
+        self.cancel_task.hide()
+
         self.setWindowIcon(QtGui.QIcon('icon.png'))
         self.setAcceptDrops(True)
+
+        #self.label.setPixmap(canvas)
+
         self.add_files.clicked.connect(self.fileOpen)
         self.remove_files.clicked.connect(self.removeEvent)
         self.convert_files.clicked.connect(self.runConversion)
-        self.convert_sel_files.clicked.connect(self.runConversionOnSelected)
+        #self.convert_files.clicked.connect(self.hideShow)
+        self.choos_dir.clicked.connect(self.chooseOuputPath)
+        #self.convert_sel_files.clicked.connect(self.runConversionOnSelected)
         self.connect(self, QtCore.SIGNAL("dropped"), self.fileDropped)
+        self.clear_files.clicked.connect(self.clearItems)
+        self.cancel_task.clicked.connect(self.stopConversion)
+
 
 #------DragAndDropEvent------------------------------------------------------------------------
 
@@ -44,10 +110,13 @@ class MyWindow(QtGui.QMainWindow):
             event.ignore()
 
     def fileDropped(self, l):
-        for url in l:
-            if os.path.exists(url):
-                print(url)
-                self.list_widget.addItem(url)
+        for files in l:
+            if os.path.exists(files) and files.endswith('.tex'):
+                print(files+" : Added")
+                y = QListWidgetItem(files)
+                y.setIcon(QIcon(r"icon.png"));
+                self.list_widget.addItem(y)
+
 #------DragAndDropEventEnd----------------------------------------------------------------------
 
 
@@ -60,75 +129,84 @@ class MyWindow(QtGui.QMainWindow):
     def taskList(self):
         taskToRun = []
         outPath = self.getOutputPath()
+        outputImages = []
         #------get task list for all------------------
         for i in range(self.list_widget.count()):
             fileToConvert = self.list_widget.item(i).text()
             file = os.path.split(str(fileToConvert))[1]
             convertedFile = str((outPath+r'\''+file[:-3]+"exr").replace("'", ""))
-            if os.path.exists(convertedFile):
-                print(convertedFile+" Already exists!")
-                pass
-            else:
-                taskToRun.append(self.getTxMakeCmd(str(fileToConvert), convertedFile))
-        return taskToRun
-        #------get task list for selected files------------------
-    def taskListSelected(self):
-        selTaskToRun = []
-        selFiles = []
-        outPath = self.getOutputPath()
-        for sItem in self.list_widget.selectedItems():
-            selFileToConvert = sItem.text()
-            fileS = os.path.split(str(selFileToConvert))[1]
-            selConvertedFile = str((outPath+r'\''+fileS[:-3]+"exr").replace("'", ""))
-            if os.path.exists(selConvertedFile):
-                pass
-            else:
-                selFiles.append(sItem.text())
-                selTaskToRun.append(self.getTxMakeCmd(str(selFileToConvert), selConvertedFile))
-        #return both the task lists
-        return selTaskToRun, selFiles
+            outputImages.append(convertedFile)
+            taskToRun.append(self.getTxMakeCmd(str(fileToConvert), convertedFile))
+        return taskToRun, outputImages
+
 
     def runConversion(self):
-        progressPercentage = 0
-        taskToRunList = self.taskList()
-        for tasks in taskToRunList:
-            print("converting "+self.list_widget.item(taskToRunList.index(tasks)).text())
-            #----Run Command-------
-            subprocess.call(tasks)
-            #----------------------
-            progressPercentage += 100.0/len(taskToRunList)
-            self.convert_progress.setValue(progressPercentage)
-            z = QListWidgetItem(self.list_widget.item(taskToRunList.index(tasks)).text())
-            z.setIcon(QIcon(r"icon_ok.png"))
-            self.list_widget.takeItem(taskToRunList.index(tasks))
-            self.list_widget.addItem(z)
-            self.list_widget.update()
+        taskToRunList = self.taskList()[0]
+        outputImageList = self.taskList()[1]
+        if self.checkOutputExist(outputImageList):
+            reply = QtGui.QMessageBox.question(self, 'Message',
+                         'some images already exists, do you want to overwrite?',
+                          QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
 
-            print("Successfully converted")
-            print("-----------------------------------------------------------------")
+            if reply != QtGui.QMessageBox.Yes:
+                return
+
+        if (self.list_widget.count())==0:
+            QtGui.QMessageBox.warning(self, 'Message', 'No Images!')
+            return
 
 
-    def runConversionOnSelected(self):
-        progressPercentage = 0
-        SelTaskToRunList = self.taskListSelected()[0]
-        selFiles = self.taskListSelected()[1]
-        for SelTasks in range(len(SelTaskToRunList)):
-            print("converting "+self.list_widget.item(SelTaskToRunList.index(SelTaskToRunList[SelTasks])).text())
-            #-------Run Command-------------------------
-            subprocess.call(SelTaskToRunList[SelTasks])
-            #-------------------------------------------
-            progressPercentage += 100.0/len(SelTaskToRunList)
-            self.convert_progress.setValue(progressPercentage)
-            z = QListWidgetItem((self.list_widget.findItems(selFiles[SelTasks],QtCore.Qt.MatchExactly))[0])
-            z.setIcon(QIcon(r"icon_ok.png"))
-            self.list_widget.takeItem(self.list_widget.row((self.list_widget.findItems(selFiles[SelTasks],QtCore.Qt.MatchExactly))[0]))
-            self.list_widget.addItem(z)
-            self.list_widget.update()
-            print("Successfully converted")
-            print("-----------------------------------------------------------------")
+        self.localConversionThread = localConversionThread(taskToRunList)
+        self.localConversionThread.valueChanged.connect(self.convert_progress.setValue)
+        self.localConversionThread.start()
+        self.localConversionThread.taskCompleteSignal.connect(self.conversionResult)
+        self.localConversionThread.taskFinishedSingnal.connect(self.bringBackUI)
+        self.add_files.hide()
+        self.clear_files.hide()
+        self.remove_files.hide()
+        self.cancel_task.show()
+
+
+    def conversionResult(self):
+        initScroll = self.localConversionThread.scroll
+        print("----ICON----SET-----:: "+str(self.localConversionThread.success))
+        if self.localConversionThread.success==1:
+            Itm = self.list_widget.item(initScroll)
+            Itm.setIcon(QIcon('icon_ok.png'))
+        else:
+            print("returning here")
+            #Itm = self.list_widget.item(self.localConversionThread.scroll-1)
+            #Itm.setIcon(QIcon('icon_Notok.png'))
+
+
+
+    def stopConversion(self):
+        self.localConversionThread.terminate()
+        print("task canceled")
+        self.convert_progress.setStyleSheet(COMPLETED_STYLE)
+        self.convert_progress.setValue(100)
+        self.localConversionThread.disconnect
+        self.localConversionThread.taskComplete = False
+        self.add_files.show()
+        self.clear_files.show()
+        self.remove_files.show()
+        self.cancel_task.hide()
+
+    def bringBackUI(self):
+        if self.localConversionThread.taskComplete==True:
+            self.cancel_task.hide()
+            self.add_files.show()
+            self.clear_files.show()
+            self.remove_files.show()
+
 #------------------TX2Exr Convert END---------------------------------------------------------------------
+    def chooseOuputPath(self):
+        choosenPath = QtGui.QFileDialog.getExistingDirectory(self, 'select output directory')
+        self.output_path_le.setText(choosenPath)
 
     def getOutputPath(self):
+        if self.list_widget.count()==0:
+            return
         outputPath = ""
         if (self.output_path_le.text())=="":
             outputPath = self.list_widget.item(0).text()
@@ -138,6 +216,13 @@ class MyWindow(QtGui.QMainWindow):
 
         return outputPath
 
+    #check if output image already exists
+    def checkOutputExist(self, outputImageList):
+        outputExists = False
+        for i in outputImageList:
+            if os.path.lexists(i):
+                outputExists = True
+        return outputExists
 
     def fileOpen(self):
         caption = 'Open file'
@@ -174,9 +259,20 @@ class MyWindow(QtGui.QMainWindow):
 
         if reply == QtGui.QMessageBox.Yes:
             self.removeItem()
+            self.update()
         else:
-            pass
+            return
 
+    def clearItems(self):
+        self.list_widget.clear()
+        self.convert_progress.setValue(0)
+        self.update()
+
+    # def hideShow(self):
+    #     self.add_files.hide()
+    #     self.clear_files.hide()
+    #     self.remove_files.hide()
+    #     self.cancel_task.show()
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
