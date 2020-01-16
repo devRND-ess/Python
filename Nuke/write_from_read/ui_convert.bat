@@ -1,0 +1,1 @@
+pyside-uic panel_ui.ui > panel_ui.py
