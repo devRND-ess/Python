@@ -1,12 +1,29 @@
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaUI as omui
 import maya.cmds as cmds
-import sys
-sys.path.append(r'G:\Python\maya\glTools-master')
-import glTools.utils.base
-import glTools.utils.mesh as mUtil
+
 
 selected = cmds.ls(sl=True,long=True) or []
+if selected:
+    follicle_grp = cmds.group( em=True, name='follicle_GRP' )
+    curves_grp = cmds.group( em = True, name = 'curves_GRP')
+else:
+    pass
+
+def createFollicle(mesh, u, v):
+    folicle = cmds.createNode('follicle')
+    folicleTrans = cmds.listRelatives(folicle, type='transform', p = True)
+    cmds.connectAttr(folicle+'.outRotate', folicleTrans[0]+'.rotate')
+    cmds.connectAttr(folicle+'.outTranslate', folicleTrans[0]+'.translate')
+    cmds.connectAttr(mesh+'.worldMatrix', folicle+'.inputWorldMatrix')
+    cmds.connectAttr(mesh+'.outMesh', folicle+'.inputMesh')
+    cmds.setAttr(folicle+'.simulationMethod', 0)
+    #get u and v from closest point on mesh
+    cmds.setAttr(folicle+'.parameterU', u)
+    cmds.setAttr(folicle+'.parameterV', v)
+
+    return folicleTrans
+
 
 def get_closest_normal(surface, x, y , z):
     node = cmds.createNode('closestPointOnMesh')
@@ -14,16 +31,19 @@ def get_closest_normal(surface, x, y , z):
     cmds.connectAttr(surface + '.worldMatrix ', node + ".inputMatrix")
     cmds.setAttr( node + ".inPosition", x, y, z, type='double3')
     normal = cmds.getAttr(node + ".normal")
+    u = cmds.getAttr(node + '.result.parameterU')
+    v = cmds.getAttr(node + '.result.parameterV')
     # there's a bug in Maya 2016 where the normal
     # is not properly normalized.  Not sure
     # if it's fixed in other years....  this
     # is the workaround
 
     result = om.MVector(*normal)
+    uvCoord = (u,v)
     cmds.delete(node)
-    print(result)
+
     #result.normalize()
-    return result
+    return result, uvCoord
 
 
 #x = 2.0
@@ -35,6 +55,8 @@ def onPress():
     if not selected:
         print("No mesh selected!")
         return
+
+
     """Take x,y from mouse click, convert into 3d world coordinates"""
     vpX, vpY, _ = cmds.draggerContext(ctx, query=True, anchorPoint=True)
     position = om.MPoint()  # 3D point with double-precision coordinates
@@ -67,21 +89,27 @@ def onPress():
             hitBary1, hitBary2 = intersection
 
         # Extract x, y, z world coordinates of the hitPoint result
-        ot = 0.5
-        x, y, z, _ = hitPoint
-        xn, yn, zn = get_closest_normal(mesh, x, y, z)
-        if (x, y, z) != (0.0, 0.0, 0.0) and (xn, yn, zn) != (0.0,0.0,0.0):
-            # cmds.polySphere(sx=10, sy=15, r=0.05)
-            # cmds.move( x, y, z )
 
-            # cmds.polySphere(sx=10, sy=15, r=0.05)
-            # cmds.move( (xn*ot)+x, (yn*ot)+y, (zn*ot)+z)
+        x, y, z, _ = hitPoint
+        xn, yn, zn = get_closest_normal(mesh, x, y, z)[0]
+        uCoord, vCoord = get_closest_normal(mesh, x, y, z)[1]
+        if (x, y, z) != (0.0, 0.0, 0.0) and (xn, yn, zn) != (0.0,0.0,0.0):
+
+            #Creating Follicle
+            # if hitFace not in hitFaceList:
+            # hitFaceList.append(hitFace)
+            folicleTrans = createFollicle(mesh, uCoord, vCoord)
+            # follicleList.append(folicleTrans[0])
+
+            # ind = hitFaceList.index(hitFace)
+            # follicleToConnect = follicleList[ind]
+
             defList = [(x,y,z,1.0)]
             listX = []
-            t = 2.0
+            t = 1.0
             for _ in range(1,5):
                 listX.append(((xn*t)+x, (yn*t)+y, (zn*t)+z, 1.0))
-                t+=2.0
+                t+=1.0
             # listX = [((xn/t)+x, (yn/t)+y, (zn/t)+z, 1.0) for t in range(1,6) if t>1]
             for i in listX:
                 defList.append(i)
@@ -90,11 +118,10 @@ def onPress():
             cmds.LockCurveLength(crv)
             cmds.setAttr(crv + ".lockLength", 1)
             cmds.move(x, y, z, crv+ ".scalePivot", crv+ ".rotatePivot", absolute=True)
-            #cmds.move( x, y, z )
-            # print(x, y, z)  # Print the world coordinates
-            # print(xn,yn,zn)
-    # cpx, cpy, cpz = cmds.getAttr( crv+'.cv[0]' )
-    # cmds.move(cpx, cpy, cpz, crv+ ".scalePivot", crv+ ".rotatePivot", absolute=True)
+            cmds.parentConstraint(folicleTrans[0], crv, mo=True)
+            cmds.parent(folicleTrans[0], follicle_grp)
+            cmds.parent(crv, curves_grp)
+
 
 # Name of dragger context
 ctx = 'Click2dTo3dCtx'
