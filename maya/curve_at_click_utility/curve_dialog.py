@@ -4,7 +4,7 @@ pyfile = open("G:\Python\maya\curve_at_click_utility\curve_ui_out.py", 'w')
 compileUi("G:\Python\maya\curve_at_click_utility\curve_ui.ui", pyfile, False, 4,
 False)
 pyfile.close()
-
+print('moving to test branch')
 path = r'G:\Python\maya\curve_at_click_utility'
 sys.path.append(path)
 from maya import OpenMayaUI as omui
