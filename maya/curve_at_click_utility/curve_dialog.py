@@ -1,11 +1,11 @@
 import sys, pprint
 from pyside2uic import compileUi
-pyfile = open("G:\Python\maya\curve_at_click_utility\curve_ui_out.py", 'w')
-compileUi("G:\Python\maya\curve_at_click_utility\curve_ui.ui", pyfile, False, 4,
+pyfile = open("G:\Github\Python\maya\curve_at_click_utility\curve_ui_out.py", 'w')
+compileUi("G:\Github\Python\maya\curve_at_click_utility\curve_ui.ui", pyfile, False, 4,
 False)
 pyfile.close()
-print('moving to test branch')
-path = r'G:\Python\maya\curve_at_click_utility'
+
+path = r'G:\Github\Python\maya\curve_at_click_utility'
 sys.path.append(path)
 from maya import OpenMayaUI as omui
 import maya.api.OpenMaya as om
@@ -410,16 +410,14 @@ class TestTool(MayaQWidgetDockableMixin, QtWidgets.QMainWindow, Ui_MainWindow):
         print('exit')
         cmds.selectType(alo=True)
 
-ui = TestTool()
-ui.show(dockable = True)
-# if __name__ == '__main__':
-#     try:
-#         ui.deleteLater()
-#     except:
-#         pass
-#     ui = TestTool()
+if __name__ == '__main__':
+    try:
+        ui.deleteLater()
+    except:
+        pass
+    ui = TestTool()
 
-#     try:
-#         ui.show(dockable = True)
-#     except:
-#         ui.deleteLater()
+    try:
+        ui.show(dockable = True)
+    except:
+        ui.deleteLater()
