@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'G:\Github\Python\maya\curve_at_click_utility\curve_ui.ui'
 #
-# Created: Fri Feb 14 00:09:25 2020
+# Created: Fri Feb 14 00:19:45 2020
 #      by: pyside2-uic  running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(381, 475)
+        MainWindow.resize(424, 475)
         MainWindow.setDockNestingEnabled(True)
         MainWindow.setUnifiedTitleAndToolBarOnMac(False)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -40,7 +40,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -41, 356, 448))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 387, 452))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
@@ -88,6 +88,9 @@ class Ui_MainWindow(object):
         self.check_lock_len.setChecked(True)
         self.check_lock_len.setObjectName("check_lock_len")
         self.horizontalLayout.addWidget(self.check_lock_len)
+        self.checkBox = QtWidgets.QCheckBox(self.grp_add_curves)
+        self.checkBox.setObjectName("checkBox")
+        self.horizontalLayout.addWidget(self.checkBox)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.verticalLayout_3.addWidget(self.grp_add_curves)
         self.grp_selection = QtWidgets.QGroupBox(self.scrollAreaWidgetContents)
@@ -223,6 +226,7 @@ class Ui_MainWindow(object):
         self.label_2.setText(QtWidgets.QApplication.translate("MainWindow", "CV Count:", None, -1))
         self.label_3.setText(QtWidgets.QApplication.translate("MainWindow", "length:", None, -1))
         self.check_lock_len.setText(QtWidgets.QApplication.translate("MainWindow", "Lock Length", None, -1))
+        self.checkBox.setText(QtWidgets.QApplication.translate("MainWindow", "Mirror", None, -1))
         self.grp_selection.setTitle(QtWidgets.QApplication.translate("MainWindow", "Selection ", None, -1))
         self.check_curve_mode.setText(QtWidgets.QApplication.translate("MainWindow", "Curve Mode", None, -1))
         self.btn_sel_curve.setText(QtWidgets.QApplication.translate("MainWindow", "Select Curve", None, -1))

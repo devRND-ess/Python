@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'G:\Github\Python\maya\control_creator\Ui_control_creator.ui'
 #
-# Created: Fri Feb 14 00:09:18 2020
+# Created: Fri Feb 14 00:15:54 2020
 #      by: pyside2-uic  running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!
