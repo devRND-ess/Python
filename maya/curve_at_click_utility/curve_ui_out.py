@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'G:\Python\maya\curve_at_click_utility\curve_ui.ui'
+# Form implementation generated from reading ui file 'G:\Github\Python\maya\curve_at_click_utility\curve_ui.ui'
 #
-# Created: Wed Feb 12 22:45:56 2020
+# Created: Thu Feb 13 23:30:33 2020
 #      by: pyside2-uic  running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!

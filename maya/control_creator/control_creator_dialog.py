@@ -1,12 +1,12 @@
 import sys,os
-path = r'G:\Python\maya\controll_creator'
-sys.path.append(path)
-os.chdir(path)
-from pyside2uic import compileUi
-pyfile = open(r"G:\Python\maya\controll_creator\Ui_control_creator.py", 'w')
-compileUi(r"G:\Python\maya\controll_creator\Ui_control_creator.ui", pyfile, False, 4,
-False)
-pyfile.close()
+# path = r'G:\Python\maya\controll_creator'
+# sys.path.append(path)
+# os.chdir(path)
+# from pyside2uic import compileUi
+# pyfile = open(r"G:\Python\maya\controll_creator\Ui_control_creator.py", 'w')
+# compileUi(r"G:\Python\maya\controll_creator\Ui_control_creator.ui", pyfile, False, 4,
+# False)
+# pyfile.close()
 
 import maya.cmds as cmds
 import maya.OpenMaya as om
@@ -261,14 +261,14 @@ class ControlCreator(MayaQWidgetDockableMixin, QtWidgets.QMainWindow, Ui_MainWin
         # sys.stdout.write('New curve created.\n')
 
 
-if __name__ == '__main__':
-    try:
-        ui.deleteLater()
-    except:
-        pass
-    ui = ControlCreator()
+# if __name__ == '__main__':
+#     try:
+#         ui.deleteLater()
+#     except:
+#         pass
+#     ui = ControlCreator()
 
-    try:
-        ui.show(dockable = True)
-    except:
-        ui.deleteLater()
+#     try:
+#         ui.show(dockable = True)
+#     except:
+#         ui.deleteLater()
