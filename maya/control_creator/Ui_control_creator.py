@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'G:\Python\maya\controll_creator\Ui_control_creator.ui'
+# Form implementation generated from reading ui file 'G:\Github\Python\maya\control_creator\Ui_control_creator.ui'
 #
-# Created: Wed Feb 12 22:00:00 2020
+# Created: Fri Feb 14 00:09:18 2020
 #      by: pyside2-uic  running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!
@@ -64,7 +64,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         font.setBold(True)
         self.groupBox.setFont(font)
-        self.groupBox.setStyleSheet("color: rgb(216, 144, 0);")
+        self.groupBox.setStyleSheet("color: rgb(223, 110, 65);")
         self.groupBox.setFlat(True)
         self.groupBox.setObjectName("groupBox")
         self.gridLayout = QtWidgets.QGridLayout(self.groupBox)
@@ -100,7 +100,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         font.setBold(True)
         self.groupBox_2.setFont(font)
-        self.groupBox_2.setStyleSheet("color: rgb(226, 134, 0);")
+        self.groupBox_2.setStyleSheet("color: rgb(223, 110, 65);")
         self.groupBox_2.setFlat(True)
         self.groupBox_2.setObjectName("groupBox_2")
         self.gridLayout_2 = QtWidgets.QGridLayout(self.groupBox_2)
@@ -156,7 +156,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         font.setBold(True)
         self.groupBox_3.setFont(font)
-        self.groupBox_3.setStyleSheet("color: rgb(216, 144, 0);")
+        self.groupBox_3.setStyleSheet("color: rgb(223, 110, 65);")
         self.groupBox_3.setFlat(True)
         self.groupBox_3.setObjectName("groupBox_3")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.groupBox_3)
@@ -207,7 +207,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         font.setBold(True)
         self.groupBox_4.setFont(font)
-        self.groupBox_4.setStyleSheet("color: rgb(226, 134, 0);")
+        self.groupBox_4.setStyleSheet("color: rgb(223, 110, 65);")
         self.groupBox_4.setFlat(True)
         self.groupBox_4.setObjectName("groupBox_4")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.groupBox_4)

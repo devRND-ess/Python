@@ -1,10 +1,10 @@
 import sys,os
-path = r'G:\Python\maya\controll_creator'
+path = r'G:\Github\Python\maya\control_creator'
 sys.path.append(path)
 os.chdir(path)
 from pyside2uic import compileUi
-pyfile = open(r"G:\Python\maya\controll_creator\Ui_control_creator.py", 'w')
-compileUi(r"G:\Python\maya\controll_creator\Ui_control_creator.ui", pyfile, False, 4,
+pyfile = open(r"G:\Github\Python\maya\control_creator\Ui_control_creator.py", 'w')
+compileUi(r"G:\Github\Python\maya\control_creator\Ui_control_creator.ui", pyfile, False, 4,
 False)
 pyfile.close()
 
@@ -28,8 +28,8 @@ QLabel{
   border-radius: 5px;
   min-height: 50px;
   min-width: 20px;
-  background-color: rgb(76, 76, 163);
-  color: rgb(212, 212, 212)
+  background-color: rgb(72, 170, 181);
+  color: rgb(222, 222, 222)
 }
 """
 #-----------------------------------

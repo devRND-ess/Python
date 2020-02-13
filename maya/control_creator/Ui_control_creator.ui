@@ -100,7 +100,7 @@ background-color: rgb(17, 194, 126);</string>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(216, 144, 0);</string>
+           <string notr="true">color: rgb(223, 110, 65);</string>
           </property>
           <property name="title">
            <string>Sticks</string>
@@ -172,7 +172,7 @@ font: 8pt &quot;MS Shell Dlg 2&quot;;</string>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(226, 134, 0);</string>
+           <string notr="true">color: rgb(223, 110, 65);</string>
           </property>
           <property name="title">
            <string>Arrows</string>
@@ -288,7 +288,7 @@ font: 8pt &quot;MS Shell Dlg 2&quot;;</string>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(216, 144, 0);</string>
+           <string notr="true">color: rgb(223, 110, 65);</string>
           </property>
           <property name="title">
            <string>Basic Shapes</string>
@@ -393,7 +393,7 @@ font: 8pt &quot;MS Shell Dlg 2&quot;;</string>
            </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(226, 134, 0);</string>
+           <string notr="true">color: rgb(223, 110, 65);</string>
           </property>
           <property name="title">
            <string>Face/IK-FK</string>
