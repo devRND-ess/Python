@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'G:\Github\Python\maya\curve_at_click_utility\curve_ui.ui'
 #
-# Created: Fri Feb 14 00:19:45 2020
+# Created: Thu Apr 16 19:13:51 2020
 #      by: pyside2-uic  running on PySide2 2.0.0~alpha0
 #
 # WARNING! All changes made in this file will be lost!
